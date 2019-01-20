@@ -1,0 +1,140 @@
+version: '3.7'
+services:
+  es-n1:
+    image: ${ES_IMAGE}
+    container_name: ${ES_MASTER_N1_NAME}
+    environment:
+      - cluster.name=${ES_MASTER_CLUSTER}
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "${ES_MASTER_N1_PUBLISH_PORT}:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - es-master-n1-data:/usr/share/elasticsearch/data
+      - es-master-n1-logs:/usr/share/elasticsearch/logs
+      - es-master-n1-repo:/esrepo
+    networks:
+      - esnet
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:9200"]
+      start_period: 15s
+      interval: 10s
+      timeout: 10s
+
+  es-n2:
+    image: ${ES_IMAGE}
+    container_name: ${ES_MASTER_N2_NAME}
+    environment:
+      - cluster.name=${ES_MASTER_CLUSTER}
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=${ES_MASTER_N1_NAME}"
+    ports:
+      - "${ES_MASTER_N2_PUBLISH_PORT}:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - es-master-n2-data:/usr/share/elasticsearch/data
+      - es-master-n2-logs:/usr/share/elasticsearch/logs
+      - es-master-n2-repo:/esrepo
+    networks:
+      - esnet
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:9200"]
+      start_period: 15s
+      interval: 10s
+      timeout: 10s
+
+  es-n3:
+    image: ${ES_IMAGE}
+    container_name: ${ES_REPLICA_N1_NAME}
+    environment:
+      - cluster.name=${ES_REPLICA_CLUSTER}
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "${ES_REPLICA_N1_PUBLISH_PORT}:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - es-replica-n1-data:/usr/share/elasticsearch/data
+      - es-replica-n1-logs:/usr/share/elasticsearch/logs
+      - es-replica-n1-repo:/esrepo
+    networks:
+      - esnet
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:9200"]
+      start_period: 15s
+      interval: 10s
+      timeout: 10s
+
+  es-n4:
+    image: ${ES_IMAGE}
+    container_name: ${ES_REPLICA_N2_NAME}
+    environment:
+      - cluster.name=${ES_REPLICA_CLUSTER}
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=${ES_REPLICA_N1_NAME}"
+    ports:
+      - "${ES_REPLICA_N2_PUBLISH_PORT}:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - es-replica-n2-data:/usr/share/elasticsearch/data
+      - es-replica-n2-logs:/usr/share/elasticsearch/logs
+      - es-replica-n2-repo:/esrepo
+    networks:
+      - esnet
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:9200"]
+      start_period: 15s
+      interval: 10s
+      timeout: 10s
+
+volumes:
+  es-master-n1-data:
+    driver: local
+  es-master-n1-logs:
+    driver: local
+  es-master-n1-repo:
+    driver: local
+  es-master-n2-data:
+    driver: local
+  es-master-n2-logs:
+    driver: local
+  es-master-n2-repo:
+    driver: local
+  es-replica-n1-data:
+    driver: local
+  es-replica-n1-logs:
+    driver: local
+  es-replica-n1-repo:
+    driver: local
+  es-replica-n2-data:
+    driver: local
+  es-replica-n2-logs:
+    driver: local
+  es-replica-n2-repo:
+    driver: local
+
+networks:
+  esnet:
+    name: ${ES_NETWORK}
+
+
+# vi:et:ts=2:sw=2
