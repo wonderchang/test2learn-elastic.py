@@ -22,8 +22,9 @@ def es_replica():
 @pytest.fixture
 def create_index(es_master):
     indexes = []
-    def _create_index(body=None):
-        index = uuid.uuid4().hex
+    def _create_index(index=None, body=None):
+        if not index:
+            index = uuid.uuid4().hex
         es_master.indices.create(index, body)
         indexes.append(index)
         return index
@@ -35,7 +36,7 @@ def create_index(es_master):
 @pytest.fixture
 def assert_token_analyze(es_master, create_index):
     def _assert_token_analyze(analyze, tokens, settings=None):
-        index = create_index(settings)
+        index = create_index(body=settings)
         data = es_master.indices.analyze(index, analyze)
         assert [token['token'] for token in data['tokens']] == tokens
 
