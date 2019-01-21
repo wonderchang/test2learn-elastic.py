@@ -7,6 +7,7 @@ es_image_name = docker.elastic.co/elasticsearch/elasticsearch
 
 export ES_IMAGE = $(es_image_name):$(es_version)
 export ES_NETWORK = es-network
+export ES_REPO_PATH = /esrepo
 
 export ES_MASTER_CLUSTER = es-master
 export ES_DEFAULT_PORT = 9200
@@ -50,6 +51,7 @@ test: docker_run_opts += --env ES_MASTER_N1_HOST=$(ES_MASTER_N1_HOST)
 test: docker_run_opts += --env ES_MASTER_N2_HOST=$(ES_MASTER_N2_HOST)
 test: docker_run_opts += --env ES_REPLICA_N1_HOST=$(ES_REPLICA_N1_HOST)
 test: docker_run_opts += --env ES_REPLICA_N2_HOST=$(ES_REPLICA_N2_HOST)
+test: docker_run_opts += --env ES_REPO_PATH=$(ES_REPO_PATH)
 test:
 	$(call docker_run,pytest -vvv $(TEST))
 

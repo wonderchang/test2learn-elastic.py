@@ -17,7 +17,7 @@ services:
       - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - es-master-n1-data:/usr/share/elasticsearch/data
       - es-master-n1-logs:/usr/share/elasticsearch/logs
-      - es-master-n1-repo:/esrepo
+      - ./esrepo:${ES_REPO_PATH}
     networks:
       - esnet
     healthcheck:
@@ -44,7 +44,7 @@ services:
       - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - es-master-n2-data:/usr/share/elasticsearch/data
       - es-master-n2-logs:/usr/share/elasticsearch/logs
-      - es-master-n2-repo:/esrepo
+      - ./esrepo:${ES_REPO_PATH}
     networks:
       - esnet
     healthcheck:
@@ -70,7 +70,7 @@ services:
       - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - es-replica-n1-data:/usr/share/elasticsearch/data
       - es-replica-n1-logs:/usr/share/elasticsearch/logs
-      - es-replica-n1-repo:/esrepo
+      - ./esrepo:${ES_REPO_PATH}
     networks:
       - esnet
     healthcheck:
@@ -97,7 +97,7 @@ services:
       - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - es-replica-n2-data:/usr/share/elasticsearch/data
       - es-replica-n2-logs:/usr/share/elasticsearch/logs
-      - es-replica-n2-repo:/esrepo
+      - ./esrepo:${ES_REPO_PATH}
     networks:
       - esnet
     healthcheck:
@@ -111,25 +111,19 @@ volumes:
     driver: local
   es-master-n1-logs:
     driver: local
-  es-master-n1-repo:
-    driver: local
   es-master-n2-data:
     driver: local
   es-master-n2-logs:
-    driver: local
-  es-master-n2-repo:
     driver: local
   es-replica-n1-data:
     driver: local
   es-replica-n1-logs:
     driver: local
-  es-replica-n1-repo:
-    driver: local
   es-replica-n2-data:
     driver: local
   es-replica-n2-logs:
     driver: local
-  es-replica-n2-repo:
+  esrepo:
     driver: local
 
 networks:

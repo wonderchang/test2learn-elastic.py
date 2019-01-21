@@ -41,5 +41,38 @@ def assert_token_analyze(es_master, create_index):
 
     return _assert_token_analyze
 
+@pytest.fixture
+def create_repo(es_master, es_replica):
+    repos = []
+    def _create_repo(repo=None):
+        if not repo:
+            repo = uuid.uuid4().hex
+
+        body = {
+            "type": "fs",
+            "settings": {
+                "location": os.environ.get("ES_REPO_PATH"),
+            }
+        }
+        es_master.snapshot.create_repository(repo, body=body)
+        es_replica.snapshot.create_repository(repo, body=body)
+        repos.append(repo)
+
+        return repo
+
+    yield _create_repo
+
+    for repo in repos:
+        snapshots = es_master.snapshot.get(repo, '_all')
+        for snapshot in snapshots['snapshots']:
+            es_master.snapshot.delete(repo, snapshot['snapshot'])
+
+        snapshots = es_replica.snapshot.get(repo, '_all')
+        for snapshot in snapshots['snapshots']:
+            es_replica.snapshot.delete(repo, snapshot['snapshot'])
+
+        es_master.snapshot.delete_repository(repo)
+        es_replica.snapshot.delete_repository(repo)
+
 
 # vi:et:ts=4:sw=4:cc=80
