@@ -75,5 +75,19 @@ def create_repo(es_master, es_replica):
         es_master.snapshot.delete_repository(repo)
         es_replica.snapshot.delete_repository(repo)
 
+@pytest.fixture
+def set_index_template(es_master):
+    templates = []
+
+    def _set_index_template(template_body):
+        template = uuid.uuid4().hex
+        es_master.indices.put_template(template, template_body)
+        templates.append(template)
+
+    yield _set_index_template
+
+    for template in templates:
+        es_master.indices.delete_template(template)
+
 
 # vi:et:ts=4:sw=4:cc=80
